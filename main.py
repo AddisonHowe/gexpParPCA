@@ -4,6 +4,7 @@ import numpy as np
 import scipy as scipy
 import pickle as pkl
 from sklearn.decomposition import PCA
+from sklearn.preprocessing import normalize
 from helpers import get_bin_ranges, get_bins_from_intervals, load_psts
 
 ######################
@@ -46,6 +47,9 @@ parser.add_argument("--bin_sz", type=int, default=1000,
     help="# of cells per bin")
 parser.add_argument("--ov_frac", type=float, default=0.5,
     help="fraction of bin to overlap")
+
+parser.add_argument("--row_normalize", action="store_true",
+    help="Normalize gene expression matrix by cell.")
 
 parser.add_argument("--seed", type=int,  default=0,
     help="random number seed")
@@ -101,10 +105,15 @@ if rank == 0:
 
 data_dict = None
 if rank == 0:
+    print("Loading data...")
+    t0 = time.time()
     gexp_sp = scipy.sparse.load_npz(gem_fname).tocsr()
+    t1 = time.time()
+    print(f"Data loaded in {t1-t0:.3g} sec")
 
     # Perform any desired transformations only on rank 0.
-    # ...
+    if args.row_normalize:
+        gexp_sp = normalize(gexp_sp, norm='l1', axis=1, copy=False)
 
     data_dict = {
         "ncells": gexp_sp.shape[0],
