@@ -78,6 +78,8 @@ binsz_fname     = f"{pcadir}/binsize.txt"
 bin_psts_fname  = f"{pcadir}/bin_psts.npy"
 bin_cidxs_fname = f"{pcadir}/bin_cidxs.pkl"
 seed_fname      = f"{pcadir}/pca_base_seed.txt"
+nboot_fname     = f"{pcadir}/nboot.txt"
+nsamp_fname     = f"{pcadir}/nsamp.txt"
 
 # Set seed
 if rank == 0:
@@ -95,6 +97,11 @@ if rank == 0:
     os.makedirs(eigdir, exist_ok=True)
     with open(seed_fname, 'w') as f:
         f.write(f"{seed}")
+    with open(nboot_fname, 'w') as f:
+        f.write(f"{nboot}")
+    with open(nsamp_fname, 'w') as f:
+        f.write(f"{nsamp}")
+    
 
 
 ################################################################################################
